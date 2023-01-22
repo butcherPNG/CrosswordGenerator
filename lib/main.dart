@@ -161,15 +161,3 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-List jsonWords = [
-  {"name": "one"},
-  {"name": "name"},
-  {"name": "same"},
-  {"name": "space"},
-  {"name": "hand"},
-  {"name": "water"},
-  {"name": "peace"},
-  {"name": "clean"},
-  {"name": "chair"},
-  {"name": "word"},
-];
