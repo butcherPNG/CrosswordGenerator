@@ -1,12 +1,46 @@
 [
-  {"name": "one"},
-  {"name": "name"},
-  {"name": "same"},
-  {"name": "space"},
-  {"name": "hand"},
-  {"name": "water"},
-  {"name": "peace"},
-  {"name": "clean"},
-  {"name": "chair"},
-  {"name": "word"}
+  {
+    "name": "one",
+    "description": "one"
+  },
+  {
+    "name": "name",
+    "description": "name"
+  },
+  {
+    "name": "same",
+    "description": "same"
+  },
+  {
+    "name": "space",
+    "description": "space"
+  },
+  {
+    "name": "hand",
+    "description": "hand"
+  },
+  {
+    "name": "water",
+    "description": "water"
+  },
+  {
+    "name": "peace",
+    "description": "peace"
+  },
+  {
+    "name": "clean",
+    "description": "clean"
+  },
+  {
+    "name": "chair",
+    "description": "chair"
+  },
+  {
+    "name": "word",
+    "description": "word"
+  },
+  {
+    "name": "two",
+    "description": "two"
+  }
 ]

@@ -40,6 +40,34 @@
   <script src="flutter.js" defer></script>
 </head>
 <body>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
+
+
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD5Wv3Sc76M7CEOcV1MOA-b6skVvn1QzjI",
+      authDomain: "crosswordgen-6517e.firebaseapp.com",
+      projectId: "crosswordgen-6517e",
+      storageBucket: "crosswordgen-6517e.appspot.com",
+      messagingSenderId: "13901897122",
+      appId: "1:13901897122:web:970f27c78ff67b9b5d26fb"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+  </script>
   <script>
     window.addEventListener('load', function(ev) {
       // Download main.dart.js

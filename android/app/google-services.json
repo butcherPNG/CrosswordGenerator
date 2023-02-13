@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "13901897122",
+    "project_id": "crosswordgen-6517e",
+    "storage_bucket": "crosswordgen-6517e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:13901897122:android:797a306191a82ade5d26fb",
+        "android_client_info": {
+          "package_name": "com.example.crosswordgen"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "13901897122-i7kf4p4tdtenvf04di2pvql218qc9qgo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARS5bJBK7Rmy0yUbewHb0HJmw0CuYhEV0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "13901897122-i7kf4p4tdtenvf04di2pvql218qc9qgo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

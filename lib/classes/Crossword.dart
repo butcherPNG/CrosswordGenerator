@@ -3,18 +3,21 @@
 
 import 'dart:math';
 
+import 'package:crosswordgen/classes/Description.dart';
+
 import 'Tuple.dart';
 
 class Crossword {
   String letters = "abcdefghijklmnopqrstuvwxyz";
-  List<int> _dirX = [0, 1];
-  List<int> _dirY = [1, 0];
+  final List<int> _dirX = [0, 1];
+  final List<int> _dirY = [1, 0];
   List<List<String>>? _board;
   List<List<int>>? _hWords;
   List<List<int>>? _vWords;
-
+  List<Description> descriptionsVert = [];
+  List<Description> descriptionsHoriz = [];
   List<String>? usedWords;
-
+  int index = 1;
   List<Tuple4<int, int, int, int>> _starts = [];
 
   int _nBlockInserted = 0;
@@ -53,37 +56,22 @@ class Crossword {
     }
   }
 
+
   String toString() {
-    String result = "";
-    for (int i = 0; i < _n!; i++) {
-      for (int j = 0; j < _m!; j++) {
-        result +=
-        letters.contains(_board![i][j].toString()) ? _board![i][j] : ' ';
-      }
-      if (i < _n! - 1) result += '\n';
-    }
-    return result;
+    return _board!.map((row) =>
+        row.map((col) =>
+        letters.contains(col) ? col : ' ').join('')).join('\n');
   }
+  String getAt(int r, int c) => _board![r][c];
 
-  String getAt(int r, int c) {
-    return _board![r][c];
-  }
+  void setAt(int r, int c, String value) => _board![r][c] = value;
+  int getN() => _n!;
+  int getM() => _m!;
 
-  void setAt(int r, int c, String value) {
-    _board![r][c] = value;
-  }
-
-  int getN() {
-    return _n!;
-  }
-
-  int getM() {
-    return _m!;
-  }
 
   var inRTL;
 
-  isValidPosition(int x, int y) {
+  bool isValidPosition(int x, int y) {
     return x >= 0 && y >= 0 && x < _n! && y < _m!;
   }
 
@@ -94,47 +82,46 @@ class Crossword {
       for (var j = 0; j < word.length; j++) {
         int x1 = x, y1 = y + j;
 
-        if (!(isValidPosition(x1, y1) &&
-            (_board![x1][y1] == ' ' || _board![x1][y1] == word[j]))) return -1;
-        if (isValidPosition(x1 - 1, y1)) if (_hWords![x1 - 1][y1] > 0) return -1;
-        if (isValidPosition(x1 + 1, y1)) if (_hWords![x1 + 1][y1] > 0) return -1;
+        if (!isValidPosition(x1, y1)) return -1;
+        if (_board![x1][y1] != ' ' && _board![x1][y1] != word[j]) return -1;
+        if (isValidPosition(x1 - 1, y1) && _hWords![x1 - 1][y1] > 0) return -1;
+        if (isValidPosition(x1 + 1, y1) && _hWords![x1 + 1][y1] > 0) return -1;
         if (_board![x1][y1] == word[j]) result++;
       }
     } else {
       for (var j = 0; j < word.length; j++) {
         int x1 = x + j, y1 = y;
-        if (!(isValidPosition(x1, y1) &&
-            (_board![x1][y1] == ' ' || _board![x1][y1] == word[j]))) return -1;
-        if (isValidPosition(x1, y1 - 1)) if (_vWords![x1][y1 - 1] > 0) return -1;
-        if (isValidPosition(x1, y1 + 1)) if (_vWords![x1][y1 + 1] > 0) return -1;
+
+        if (!isValidPosition(x1, y1)) return -1;
+        if (_board![x1][y1] != ' ' && _board![x1][y1] != word[j]) return -1;
+        if (isValidPosition(x1, y1 - 1) && _vWords![x1][y1 - 1] > 0) return -1;
+        if (isValidPosition(x1, y1 + 1) && _vWords![x1][y1 + 1] > 0) return -1;
         if (_board![x1][y1] == word[j]) result++;
       }
     }
 
     int xStar = x - _dirX[dir], yStar = y - _dirY[dir];
-    if (isValidPosition(xStar, yStar)) if (!(_board![xStar][yStar] == ' ' ||
-        _board![xStar][yStar] == '*')) return -1;
+    if (isValidPosition(xStar, yStar) &&
+        (_board![xStar][yStar] != ' ' && _board![xStar][yStar] != '*')) return -1;
 
     xStar = x + _dirX[dir] * word.length;
     yStar = y + _dirY[dir] * word.length;
-    if (isValidPosition(xStar, yStar)) if (!(_board![xStar][yStar] == ' ' ||
-        _board![xStar][yStar] == '*')) return -1;
+    if (isValidPosition(xStar, yStar) &&
+        (_board![xStar][yStar] != ' ' && _board![xStar][yStar] != '*')) return -1;
 
     return result == word.length ? -1 : result;
   }
 
-  void putWord(String word, int x, int y, int dir, int value) {
-    if (word == null || x == null || y == null || dir == null || value == null) {
-      print('Error');
-      // handle the error here
-      return;
-    }
+
+  void putWord(String word, int x, int y, int dir, int value, String? description) {
     if (usedWords!.contains(word)) return;
     var mat = dir == 0 ? _hWords : _vWords;
-
+    var descriptions = dir == 0 ? descriptionsVert : descriptionsHoriz;
+    descriptions.add(Description(description: description!, index: index));
+    index++;
     usedWords!.add(word);
     _nBlockInserted++;
-    _starts!.add(new Tuple4(x, y, dir, word.length));
+    _starts.add(Tuple4(x, y, dir, word.length));
 
     for (var i = 0; i < word.length; i++) {
       int x1 = x + _dirX[dir] * i, y1 = y + _dirY[dir] * i;
@@ -149,102 +136,93 @@ class Crossword {
     if (isValidPosition(xStar, yStar)) _board![xStar][yStar] = '*';
   }
 
-  int addWord(String word) {
-    //var max = int.MaxValue;
-    // region ubicate the word into the board
+
+  int addWord(String word, String description) {
+    var info = bestPosition(word);
+    if (info == null) return -1;
 
     var wordToInsert = word;
-    var info = bestPosition(wordToInsert);
-    if (info != null) {
-      if (info.Item3 == 0) {
-        _hCount++;
-        // if (inRTL)
-        // wordToInsert = word.Aggregate("", (x, y) => y + x);
-      } else {
-        _vCount++;
-      }
-      var value = info.Item3 == 0 ? _hCount : _vCount;
-      putWord(wordToInsert, info.Item1, info.Item2, info.Item3, value!);
-      return info.Item3;
+    var dir = info.Item3;
+    var x = info.Item1;
+    var y = info.Item2;
+
+    if (dir == 0) {
+      _hCount++;
+    } else {
+      _vCount++;
     }
 
-    return -1;
+    var value = dir == 0 ? _hCount : _vCount;
+    putWord(wordToInsert, x, y, dir, value, description);
+    return dir;
   }
 
+
   List<Tuple<int, int, int>>? findPositions(String word) {
-    //region find best position to ubicate the word into the board
-    var max = 0;
+    int max = 0;
     List<Tuple<int, int, int>> positions = [];
-    for (var x = 0; x < _n!; x++) {
-      for (var y = 0; y < _m!; y++) {
-        for (var i = 0; i < _dirX.length; i++) {
-          var dir = i;
-          // var wordToInsert = i == 0 && inRTL ? word.Aggregate("", (a, b) => b + a) : word;
-          var wordToInsert = word;
 
-          var count = canBePlaced(wordToInsert, x, y, dir);
-
+    for (int x = 0; x < _n!; x++) {
+      for (int y = 0; y < _m!; y++) {
+        for (int dir = 0; dir < _dirX.length; dir++) {
+          int count = canBePlaced(word, x, y, dir);
           if (count < max) continue;
           if (count > max) positions.clear();
 
           max = count;
-          positions.add(new Tuple<int, int, int>(x, y, dir));
+          positions.add(Tuple(x, y, dir));
         }
       }
     }
-    //endregion
-
-    return positions;
+    return positions.isNotEmpty ? positions : null;
   }
+
 
   Tuple<int, int, int>? bestPosition(String word) {
     var positions = findPositions(word);
-    if (positions!.length > 0) {
+    if (positions!.isNotEmpty) {
       var index = _rand!.nextInt(positions.length);
       return positions[index];
     }
     return null;
   }
+  bool isLetter(String a) => letters.contains(a);
 
-  bool isLetter(String a) {
-    return letters.contains(a.toString());
-  }
-
-  List<List<String>> getBoard() {
-    return _board!;
-  }
+  List<List<String>> getBoard() => _board!;
 
   void reset() {
     for (var i = 0; i < _n!; i++) {
       for (var j = 0; j < _m!; j++) {
         _board![i][j] = ' ';
-        _vWords![i][j] = 0;
-        _hWords![i][j] = 0;
-        _hCount = _vCount = 0;
+        _vWords![i][j] = _hWords![i][j] = 0;
       }
     }
+    _hCount = _vCount = 0;
   }
+
 
   void addWords(List<String> words) {
     _wordsToInsert = words;
-    _bestSol = getN()! * getM()!;
-    initialTime = DateTime.now();
-    gen(0);
-
-    _board = _tempBoard!;
+    _bestSol = _n! * _m!;
+    var currentTime = DateTime.now();
+    generateSolution(0);
+    _board = _tempBoard;
   }
 
+
   int freeSpaces() {
-    var count = 0;
-    for (var i = 0; i < getN()!; i++) {
-      for (var j = 0; j < getM()!; j++) {
+    int count = 0;
+    for (int i = 0; i < getN(); i++) {
+      for (int j = 0; j < getM(); j++) {
         if (_board![i][j] == ' ' || _board![i][j] == '*') count++;
       }
     }
     return count;
   }
 
-  void gen(int pos) {
+
+
+  void generateSolution(int pos) {
     if (pos >= _wordsToInsert!.length ||
         (DateTime.now().difference(initialTime!)).inMinutes > 1) return;
 
@@ -252,24 +230,21 @@ class Crossword {
       var posi = bestPosition(_wordsToInsert![i]);
       if (posi != null) {
         var word = _wordsToInsert![i];
-        // if (posi.Item3==0 && inRTL)
-        //     word = word.Aggregate("", (x, y) => y + x);
-
         var value = posi.Item3 == 0 ? _hCount : _vCount;
-
-        putWord(word, posi.Item1, posi.Item2, posi.Item3, value!);
-        gen(pos + 1);
+        putWord(word, posi.Item1, posi.Item2, posi.Item3, value, '');
+        generateSolution(pos + 1);
         removeWord(word, posi.Item1, posi.Item2, posi.Item3);
       } else {
-        gen(pos + 1);
+        generateSolution(pos + 1);
       }
     }
 
-    var c = freeSpaces();
+    int c = freeSpaces();
     if (c >= _bestSol!) return;
     _bestSol = c;
-    _tempBoard = new List<List<String>>.from(_board!);
+    _tempBoard = List<List<String>>.from(_board!);
   }
+
 
   void removeWord(String word, int x, int y, int dir) {
     var mat = dir == 0 ? _hWords : _vWords;
@@ -282,13 +257,15 @@ class Crossword {
     }
 
     int xStar = x - _dirX[dir], yStar = y - _dirY[dir];
-    if (isValidPosition(xStar, yStar) && hasFactibleValueAround(xStar, yStar))
+    if (isValidPosition(xStar, yStar) && hasFactibleValueAround(xStar, yStar)) {
       _board![xStar][yStar] = ' ';
+    }
 
     xStar = x + _dirX[dir] * word.length;
     yStar = y + _dirY[dir] * word.length;
-    if (isValidPosition(xStar, yStar) && hasFactibleValueAround(xStar, yStar))
+    if (isValidPosition(xStar, yStar) && hasFactibleValueAround(xStar, yStar)) {
       _board![xStar][yStar] = ' ';
+    }
   }
 
   bool hasFactibleValueAround(int x, int y) {
@@ -305,10 +282,10 @@ class Crossword {
   }
 
   bool isCompleted() {
-    return (this.getN()! * this.getM()!) - this._nBlockInserted < 10;
+    return (getN() * getM()) - _nBlockInserted < 10;
   }
 
   List<Tuple4<int, int, int, int>>? getStarts() {
-    return this._starts;
+    return _starts;
   }
 }
